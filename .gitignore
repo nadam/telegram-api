@@ -2,3 +2,9 @@ state.ini
 .gradle
 build
 *.iml
+
+# Eclipse files
+.classpath
+.project
+.settings/
+bin/

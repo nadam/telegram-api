@@ -8,6 +8,7 @@ if (project.hasProperty('buildIndex')) {
 
 project.group = "org.telegram"
 
+apply plugin: 'eclipse'
 apply plugin: 'java'
 
 dependencies {
