@@ -163,10 +163,10 @@ public class TelegramApi {
 
     private TLMethod wrapForDc(int dcId, TLMethod method) {
         if (registeredInApi.contains(dcId)) {
-            return new TLRequestInvokeWithLayer12(method);
+            return new TLRequestInvokeWithLayer18(method);
         }
 
-        return new TLRequestInvokeWithLayer12(new TLRequestInitConnection(
+        return new TLRequestInvokeWithLayer18(new TLRequestInitConnection(
                 appInfo.getApiId(), appInfo.getDeviceModel(), appInfo.getSystemVersion(), appInfo.getAppVersion(), appInfo.getLangCode(), method));
     }
 
@@ -397,7 +397,7 @@ public class TelegramApi {
 
     public boolean doSaveFilePart(long _fileId, int _filePart, byte[] _bytes) throws IOException {
         TLBool res = doRpcCall(
-                new TLRequestUploadSaveFilePart(_fileId, _filePart, new TLBytes(_bytes)),
+                new TLRequestUploadSaveFilePart(_fileId, _filePart, _bytes),
                 FILE_TIMEOUT,
                 primaryDc,
                 true);
@@ -406,7 +406,7 @@ public class TelegramApi {
 
     public boolean doSaveBigFilePart(long _fileId, int _filePart, int _totalParts, byte[] _bytes) throws IOException {
         TLBool res = doRpcCall(
-                new TLRequestUploadSaveBigFilePart(_fileId, _filePart, _totalParts, new TLBytes(_bytes)),
+                new TLRequestUploadSaveBigFilePart(_fileId, _filePart, _totalParts, _bytes),
                 FILE_TIMEOUT,
                 primaryDc);
         return res instanceof TLBoolTrue;

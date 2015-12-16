@@ -1,17 +1,16 @@
 package org.telegram.api.engine.file;
 
-import org.telegram.api.TLAbsInputFileLocation;
-import org.telegram.api.engine.Logger;
-import org.telegram.api.engine.TelegramApi;
-import org.telegram.api.upload.TLFile;
-import org.telegram.tl.TLBytes;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.telegram.api.TLAbsInputFileLocation;
+import org.telegram.api.engine.Logger;
+import org.telegram.api.engine.TelegramApi;
+import org.telegram.api.upload.TLFile;
 
 /**
  * Created by ex3ndr on 18.11.13.
@@ -255,18 +254,16 @@ public class Downloader {
         return null;
     }
 
-    private synchronized void onBlockDownloaded(DownloadBlock block, TLBytes data) {
+	private synchronized void onBlockDownloaded(DownloadBlock block, byte[] data) {
         try {
             if (block.task.file != null) {
                 block.task.file.seek(block.index * block.task.blockSize);
-                block.task.file.write(data.getData(), data.getOffset(), data.getLength());
+				block.task.file.write(data);
             } else {
                 return;
             }
         } catch (IOException e) {
             Logger.e(TAG, e);
-        } finally {
-            api.getApiContext().releaseBytes(data);
         }
         block.task.lastSuccessBlock = System.nanoTime();
         block.state = BLOCK_COMPLETED;
