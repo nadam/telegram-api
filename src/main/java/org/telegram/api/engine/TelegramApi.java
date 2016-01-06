@@ -1,5 +1,13 @@
 package org.telegram.api.engine;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.telegram.api.TLAbsUpdates;
 import org.telegram.api.TLApiContext;
 import org.telegram.api.TLConfig;
@@ -7,7 +15,14 @@ import org.telegram.api.auth.TLExportedAuthorization;
 import org.telegram.api.engine.file.Downloader;
 import org.telegram.api.engine.file.Uploader;
 import org.telegram.api.engine.storage.AbsApiState;
-import org.telegram.api.requests.*;
+import org.telegram.api.requests.TLRequestAuthExportAuthorization;
+import org.telegram.api.requests.TLRequestAuthImportAuthorization;
+import org.telegram.api.requests.TLRequestHelpGetConfig;
+import org.telegram.api.requests.TLRequestInitConnection;
+import org.telegram.api.requests.TLRequestInvokeWithLayer;
+import org.telegram.api.requests.TLRequestUploadGetFile;
+import org.telegram.api.requests.TLRequestUploadSaveBigFilePart;
+import org.telegram.api.requests.TLRequestUploadSaveFilePart;
 import org.telegram.api.upload.TLFile;
 import org.telegram.mtproto.CallWrapper;
 import org.telegram.mtproto.MTProto;
@@ -16,12 +31,11 @@ import org.telegram.mtproto.pq.Authorizer;
 import org.telegram.mtproto.pq.PqAuth;
 import org.telegram.mtproto.state.ConnectionInfo;
 import org.telegram.mtproto.util.BytesCache;
-import org.telegram.tl.*;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.telegram.tl.TLBool;
+import org.telegram.tl.TLBoolTrue;
+import org.telegram.tl.TLBytes;
+import org.telegram.tl.TLMethod;
+import org.telegram.tl.TLObject;
 
 /**
  * Created with IntelliJ IDEA.
@@ -162,12 +176,11 @@ public class TelegramApi {
     }
 
     private TLMethod wrapForDc(int dcId, TLMethod method) {
-        if (registeredInApi.contains(dcId)) {
-            return new TLRequestInvokeWithLayer18(method);
+		if (!registeredInApi.contains(dcId)) {
+			method = new TLRequestInitConnection(appInfo.getApiId(), appInfo.getDeviceModel(),
+					appInfo.getSystemVersion(), appInfo.getAppVersion(), appInfo.getLangCode(), method);
         }
-
-        return new TLRequestInvokeWithLayer18(new TLRequestInitConnection(
-                appInfo.getApiId(), appInfo.getDeviceModel(), appInfo.getSystemVersion(), appInfo.getAppVersion(), appInfo.getLangCode(), method));
+		return new TLRequestInvokeWithLayer(23, method);
     }
 
     public AbsApiState getState() {
